@@ -1,0 +1,34 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BigBrother", "BigBrother\BigBrother.csproj", "{D247DE46-C320-4B4D-9964-D8ABD1B893ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sauron.Net", "Sauron.Net\Sauron.Net\Sauron.Net.csproj", "{92DC31D8-B2E4-4BCB-B544-012764B0EC5A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D247DE46-C320-4B4D-9964-D8ABD1B893ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D247DE46-C320-4B4D-9964-D8ABD1B893ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D247DE46-C320-4B4D-9964-D8ABD1B893ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D247DE46-C320-4B4D-9964-D8ABD1B893ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EF82F29-C1DA-4072-9247-A66E1F37EEFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EF82F29-C1DA-4072-9247-A66E1F37EEFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EF82F29-C1DA-4072-9247-A66E1F37EEFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EF82F29-C1DA-4072-9247-A66E1F37EEFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92DC31D8-B2E4-4BCB-B544-012764B0EC5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92DC31D8-B2E4-4BCB-B544-012764B0EC5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92DC31D8-B2E4-4BCB-B544-012764B0EC5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92DC31D8-B2E4-4BCB-B544-012764B0EC5A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{92DC31D8-B2E4-4BCB-B544-012764B0EC5A} = {CF92162F-7AEB-48AF-B3F9-428F9D69C135}
+	EndGlobalSection
+EndGlobal

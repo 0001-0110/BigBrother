@@ -1,0 +1,3 @@
+[submodule "Sauron.Net"]
+	path = Sauron.Net
+	url = ./Sauron.Net/
