@@ -1,2 +1,13 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using Eris;
+
+namespace BigBrother;
+
+public static class Program
+{
+    public static async Task Main()
+    {
+        ErisClient client = new ErisClient();
+
+        await client.Run();
+    }
+}
