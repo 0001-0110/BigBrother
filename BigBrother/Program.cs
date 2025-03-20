@@ -1,4 +1,5 @@
-﻿using Eris;
+﻿using Discord;
+using Eris;
 
 namespace BigBrother;
 
@@ -6,8 +7,15 @@ public static class Program
 {
     public static async Task Main()
     {
-        ErisClient client = new ErisClient();
+        ErisClient eris = new ErisClient();
 
-        await client.Run();
+        //eris.AddCommandHandler<HelloCommandHandler>();
+
+        eris.Client.Ready += async () =>
+        {
+            await eris.Client.SetStatusAsync(UserStatus.Online);
+            await eris.Client.SetGameAsync("you (5.0)", type: ActivityType.Watching);
+        };
+        await eris.Run();
     }
 }
