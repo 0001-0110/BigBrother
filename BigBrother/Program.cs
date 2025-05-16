@@ -1,5 +1,11 @@
-﻿using Discord;
+﻿using BigBrother.Commands.Reminder;
+using BigBrother.Reminders;
+using Discord;
 using Eris;
+using Eris.Handlers.CommandHandlers.BuiltIn;
+using Eris.Handlers.Messages.BuiltIn;
+using Eris.Logging;
+using Microsoft.Extensions.Configuration;
 
 namespace BigBrother;
 
@@ -7,10 +13,19 @@ public static class Program
 {
     public static async Task Main()
     {
-        ErisClient eris = new ErisClient();
+        IConfigurationRoot config = new ConfigurationBuilder()
+            .AddEnvironmentVariables()
+            .Build();
 
-        //eris.AddCommandHandler<HelloCommandHandler>();
+        ErisClientBuilder builder = new ErisClientBuilder()
+            .WithConfiguration(config.GetSection("Eris"))
+            .AddLogger<ConsoleLogger>()
+            .AddMessageHandler<IgnoreBotsMessageHandler>()
+            .AddMessageHandler<EchoMessageHandler>()
+            .AddCommandHandler<HelloCommandHandler>()
+            .AddCommandHandler<VersionCommandHandler>();
 
+        ErisClient eris = builder.Build();
         eris.Client.Ready += async () =>
         {
             await eris.Client.SetStatusAsync(UserStatus.Online);
