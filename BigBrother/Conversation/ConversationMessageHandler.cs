@@ -1,6 +1,6 @@
 using Discord;
 using Discord.WebSocket;
-using Eris.Handlers.Messages;
+using Eris.Handlers.MessageHandlers;
 using Eris.Logging;
 using static BigBrother.Conversation.OllamaClient;
 using static BigBrother.Conversation.OllamaClient.OllamaRequest;

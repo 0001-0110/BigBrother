@@ -2,7 +2,7 @@
 using Discord;
 using Eris;
 using Eris.Handlers.CommandHandlers.BuiltIn;
-using Eris.Handlers.Messages.BuiltIn;
+using Eris.Handlers.MessageHandlers.BuiltIn;
 using Eris.Logging;
 using Microsoft.Extensions.Configuration;
 
