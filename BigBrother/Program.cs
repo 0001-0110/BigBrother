@@ -1,9 +1,8 @@
-﻿using BigBrother.Commands.Reminder;
-using BigBrother.Reminders;
+﻿using BigBrother.Conversation;
 using Discord;
 using Eris;
 using Eris.Handlers.CommandHandlers.BuiltIn;
-using Eris.Handlers.Messages.BuiltIn;
+using Eris.Handlers.MessageHandlers.BuiltIn;
 using Eris.Logging;
 using Microsoft.Extensions.Configuration;
 
@@ -20,8 +19,9 @@ public static class Program
         ErisClientBuilder builder = new ErisClientBuilder()
             .WithConfiguration(config.GetSection("Eris"))
             .AddLogger<ConsoleLogger>()
+            .AddService<OllamaClient>()
             .AddMessageHandler<IgnoreBotsMessageHandler>()
-            .AddMessageHandler<EchoMessageHandler>()
+            .AddMessageHandler<ConversationMessageHandler>()
             .AddCommandHandler<HelloCommandHandler>()
             .AddCommandHandler<VersionCommandHandler>();
 

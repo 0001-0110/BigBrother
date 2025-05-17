@@ -1,3 +1,6 @@
+volumes:
+  ollama-data:
+
 services:
 
   big-brother:
@@ -8,3 +11,10 @@ services:
       TZ: "Europe/Paris"
     env_file:
       - ./.env
+
+  ollama:
+    image: ollama/ollama
+    expose:
+      - "11434"
+    volumes:
+      - ollama-data:/root/.ollama
