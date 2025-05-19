@@ -26,4 +26,19 @@ public class ReminderService
     {
         throw new NotImplementedException();
     }
+
+    public async Task<Reminder> GetNextReminder(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            await Task.Delay(10000, cancellationToken);
+            Reminder? reminder = ReminderRepository._reminders.FirstOrDefault(reminder => reminder.DueDate < DateTime.Now);
+            if (reminder is not null)
+            {
+                ReminderRepository._reminders.Remove(reminder);
+                return reminder;
+            }
+        }
+        return null;
+    }
 }

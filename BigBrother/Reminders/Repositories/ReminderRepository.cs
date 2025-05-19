@@ -4,7 +4,7 @@ namespace BigBrother.Reminders.Repositories;
 
 public class ReminderRepository
 {
-    private static ICollection<Reminder> _reminders = [];
+    public static ICollection<Reminder> _reminders = [];
 
     public ReminderRepository()
     {

@@ -10,6 +10,7 @@ namespace BigBrother.Reminders;
 [Group("reminder", "truc")]
 internal class ReminderCommandHandler : CommandHandler
 {
+    // TODO Move this to the utilities
     public static bool TryParseReminderTime(string input, out DateTime dateTime)
     {
         if (TimeSpan.TryParse(input, out TimeSpan ts))
@@ -55,6 +56,7 @@ internal class ReminderCommandHandler : CommandHandler
             return;
         }
 
+        // TODO Move this in the service
         if (dueDate < DateTime.Now)
         {
             string[] errors = [
