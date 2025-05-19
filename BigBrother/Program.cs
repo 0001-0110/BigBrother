@@ -1,4 +1,7 @@
 ﻿using BigBrother.Conversation;
+using BigBrother.Reminders;
+using BigBrother.Reminders.Repositories;
+using BigBrother.Reminders.Services;
 using Discord;
 using Eris;
 using Eris.Handlers.CommandHandlers.BuiltIn;
@@ -19,17 +22,24 @@ public static class Program
         ErisClientBuilder builder = new ErisClientBuilder()
             .WithConfiguration(config.GetSection("Eris"))
             .AddLogger<ConsoleLogger>()
-            .AddService<OllamaClient>()
+
             .AddMessageHandler<IgnoreBotsMessageHandler>()
+
+            .AddCommandHandler<VersionCommandHandler>()
+
+            .AddService<OllamaClient>()
             .AddMessageHandler<ConversationMessageHandler>()
-            .AddCommandHandler<HelloCommandHandler>()
-            .AddCommandHandler<VersionCommandHandler>();
+
+            .AddService<ReminderRepository>()
+            .AddService<ReminderService>()
+            .AddCommandHandler<ReminderCommandHandler>()
+            .AddBackgroundTaskHandler<ReminderBackgroundTaskHandler>();
 
         ErisClient eris = builder.Build();
         eris.Client.Ready += async () =>
         {
             await eris.Client.SetStatusAsync(UserStatus.Online);
-            await eris.Client.SetGameAsync("you (5.0)", type: ActivityType.Watching);
+            await eris.Client.SetGameAsync("you", type: ActivityType.Watching);
         };
         await eris.Run();
     }

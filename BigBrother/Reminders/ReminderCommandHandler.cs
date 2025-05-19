@@ -1,25 +1,73 @@
+using BigBrother.Reminders.Models;
+using BigBrother.Reminders.Services;
+using Discord;
 using Discord.Interactions;
 using Eris.Handlers.CommandHandlers;
+using Eris.Logging;
 
-namespace BigBrother.Commands.Reminder;
+namespace BigBrother.Reminders;
 
 [Group("reminder", "truc")]
 internal class ReminderCommandHandler : CommandHandler
 {
-    [SlashCommand("add", "create a new reminder")]
-    public async Task Add()
+    public static bool TryParseReminderTime(string input, out DateTime dateTime)
     {
-        await RespondAsync("Not yet implemented");
+        if (TimeSpan.TryParse(input, out TimeSpan ts))
+        {
+            dateTime = DateTime.Now.Add(ts);
+            return true;
+        }
+
+        if (DateTime.TryParse(input, out DateTime dt))
+        {
+            dateTime = dt;
+            return true;
+        }
+
+        // if (input.StartsWith("in "))
+        //     {
+        //         var span = input[3..];
+        //         if (TimeSpan.TryParse(span, out var rel))
+        //             return DateTime.Now.Add(rel);
+        //     }
+
+        // Optionally, use Humanizer or other NLP parser here
+
+        dateTime = DateTime.UnixEpoch;
+        return false;
+    }
+
+    private readonly ILogger _logger;
+    private readonly ReminderService _reminderService;
+
+    public ReminderCommandHandler(ILogger logger, ReminderService reminderService)
+    {
+        _logger = logger;
+        _reminderService = reminderService;
+    }
+
+    [SlashCommand("add", "create a new reminder")]
+    public async Task Add(string when, string message)
+    {
+        if (!TryParseReminderTime(when, out DateTime dueDate))
+        {
+            await RespondAsync("Invalid date or timespan");
+            return;
+        }
+
+        _reminderService.AddReminder(new Reminder(Context.User.Id, dueDate, message));
+        await RespondAsync($"Added reminder for {TimestampTag.FromDateTime(dueDate)}");
     }
 
     [SlashCommand("list", "see all of your reminders")]
     public async Task List()
     {
-        await RespondAsync("Not yet");
+        string response = string.Join(Environment.NewLine, _reminderService.GetReminders(Context.User.Id).Select(reminder => reminder.ToString()));
+        await RespondAsync($"Reminders:\n{response}");
     }
 
     [SlashCommand("remove", "remove one of your reminder")]
-    public async Task Remove()
+    public async Task Remove(string id)
     {
         await RespondAsync("How many times do I have to tell you ? This is not yet implemented");
     }
