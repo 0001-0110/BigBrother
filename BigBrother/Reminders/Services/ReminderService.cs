@@ -19,7 +19,6 @@ public class ReminderService
 
     public IEnumerable<Reminder> GetReminders(ulong userId)
     {
-        Console.WriteLine(userId);
         return _reminderRepository.GetByUserId(userId);
     }
 

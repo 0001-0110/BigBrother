@@ -10,6 +10,6 @@ public class Reminder(ulong userId, DateTime dueDate, string message)
 
     public override string ToString()
     {
-        return $"({UserId}) {DueDate}: {Message}";
+        return $"{DueDate}: {Message}";
     }
 }
