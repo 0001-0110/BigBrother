@@ -32,8 +32,8 @@ public static class Program
 
             .AddService<ReminderRepository>()
             .AddService<ReminderService>()
-            .AddCommandHandler<ReminderCommandHandler>()
-            .AddBackgroundTaskHandler<ReminderBackgroundTaskHandler>();
+            .AddCommandHandler<ReminderCommandHandler>();
+            // .AddBackgroundTaskHandler<ReminderBackgroundTaskHandler>();
 
         ErisClient eris = builder.Build();
         eris.Client.Ready += async () =>

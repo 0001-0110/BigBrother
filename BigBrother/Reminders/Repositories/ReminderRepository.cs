@@ -21,6 +21,11 @@ public class ReminderRepository
         return _reminders.Where(reminder => reminder.UserId == userId);
     }
 
+    public Reminder? GetNextReminder()
+    {
+        return _reminders.FirstOrDefault(reminder => reminder.DueDate < DateTime.Now);
+    }
+
     public void Delete()
     {
         throw new NotImplementedException();

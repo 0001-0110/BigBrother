@@ -6,10 +6,14 @@ namespace BigBrother.Reminders.Services;
 public class ReminderService
 {
     private readonly ReminderRepository _reminderRepository;
+    private Task _reminderTask;
+
+    public event EventHandler<Reminder>? Machin;
 
     public ReminderService(ReminderRepository reminderRepository)
     {
         _reminderRepository = reminderRepository;
+        _reminderTask = Truc(CancellationToken.None);
     }
 
     public void AddReminder(Reminder reminder)
@@ -27,18 +31,18 @@ public class ReminderService
         throw new NotImplementedException();
     }
 
-    public async Task<Reminder> GetNextReminder(CancellationToken cancellationToken)
+    private async Task Truc(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
             await Task.Delay(10000, cancellationToken);
-            Reminder? reminder = ReminderRepository._reminders.FirstOrDefault(reminder => reminder.DueDate < DateTime.Now);
+            Reminder? reminder = _reminderRepository.GetNextReminder();
+            Console.WriteLine(reminder?.ToString() ?? "Null");
             if (reminder is not null)
             {
                 ReminderRepository._reminders.Remove(reminder);
-                return reminder;
+                Machin?.Invoke(this, reminder);
             }
         }
-        return null;
     }
 }

@@ -19,10 +19,15 @@ internal class ReminderBackgroundTaskHandler : IBackgroundTaskHandler
 
     public async Task Run(CancellationToken cancellationToken)
     {
-        while (!cancellationToken.IsCancellationRequested)
-        {
-            Reminder reminder = await _reminderService.GetNextReminder(cancellationToken);
-            await UserExtensions.SendMessageAsync(await _client.GetUserAsync(reminder.UserId), reminder.ToString());
-        }
+        // while (!cancellationToken.IsCancellationRequested)
+        // {
+        //     Console.WriteLine("Waiting");
+        //     Reminder reminder = await _reminderService.GetNextReminder(cancellationToken);
+        //     Console.WriteLine($"Reminding: {reminder}");
+        //     await UserExtensions.SendMessageAsync(await _client.GetUserAsync(reminder.UserId), reminder.ToString());
+        // }
+
+        // await foreach (Reminder reminder in _reminderService.GetDueReminders(CancellationToken.None))
+        //     await UserExtensions.SendMessageAsync(await _client.GetUserAsync(reminder.UserId), reminder.ToString());
     }
 }

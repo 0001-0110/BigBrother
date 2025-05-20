@@ -2,6 +2,7 @@ using BigBrother.Reminders.Models;
 using BigBrother.Reminders.Services;
 using Discord;
 using Discord.Interactions;
+using Discord.WebSocket;
 using Eris.Handlers.CommandHandlers;
 using Eris.Logging;
 
@@ -41,10 +42,11 @@ internal class ReminderCommandHandler : CommandHandler
     private readonly ILogger _logger;
     private readonly ReminderService _reminderService;
 
-    public ReminderCommandHandler(ILogger logger, ReminderService reminderService)
+    public ReminderCommandHandler(DiscordSocketClient client, ILogger logger, ReminderService reminderService)
     {
         _logger = logger;
         _reminderService = reminderService;
+        _reminderService.Machin += async (sender, reminder) => await UserExtensions.SendMessageAsync(await client.GetUserAsync(reminder.UserId), reminder.ToString());
     }
 
     [SlashCommand("add", "create a new reminder")]
