@@ -46,7 +46,8 @@ internal class ReminderCommandHandler : CommandHandler
     {
         _logger = logger;
         _reminderService = reminderService;
-        _reminderService.Machin += async (sender, reminder) => await UserExtensions.SendMessageAsync(await client.GetUserAsync(reminder.UserId), reminder.ToString());
+        _reminderService.Machin += async (sender, reminder) =>
+            (await client.GetChannelAsync(reminder.ChannelId) as IMessageChannel)?.SendMessageAsync(reminder.ToString());
     }
 
     [SlashCommand("add", "create a new reminder")]
@@ -87,7 +88,7 @@ internal class ReminderCommandHandler : CommandHandler
             await RespondAsync(errors[new Random().Next(errors.Length)]);
         }
 
-        _reminderService.AddReminder(new Reminder(Context.User.Id, dueDate, message));
+        _reminderService.AddReminder(new Reminder(Context.User.Id, Context.Channel.Id, dueDate, message));
         await RespondAsync($"Added reminder for {TimestampTag.FromDateTime(dueDate)}");
     }
 
