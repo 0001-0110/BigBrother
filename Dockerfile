@@ -1,5 +1,5 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-WORKDIR /app
+WORKDIR /src
 
 # Copy project files
 COPY BigBrother.sln ./
@@ -19,6 +19,5 @@ RUN dotnet publish -c Release --property:PublishDir=out
 FROM mcr.microsoft.com/dotnet/sdk:9.0
 WORKDIR /app
 # Copy the executable
-COPY --from=build /app/BigBrother/out/ ./
-EXPOSE 8080
+COPY --from=build /src/BigBrother/out/ ./
 ENTRYPOINT [ "dotnet", "BigBrother.dll" ]

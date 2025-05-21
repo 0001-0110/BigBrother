@@ -4,11 +4,11 @@ namespace BigBrother.Reminders.Repositories;
 
 public class ReminderRepository
 {
-    public static ICollection<Reminder> _reminders = [];
+    public ICollection<Reminder> _reminders;
 
     public ReminderRepository()
     {
-        // _reminders = [];
+        _reminders = [];
     }
 
     public void Create(Reminder reminder)
@@ -21,13 +21,13 @@ public class ReminderRepository
         return _reminders.Where(reminder => reminder.UserId == userId);
     }
 
-    public Reminder? GetNextReminder()
+    public Reminder? GetNextDueReminder()
     {
-        return _reminders.FirstOrDefault(reminder => reminder.DueDate < DateTime.Now);
+        return _reminders.MinBy(reminder => reminder.DueDate);
     }
 
-    public void Delete()
+    public void Delete(Reminder reminder)
     {
-        throw new NotImplementedException();
+        _reminders.Remove(reminder);
     }
 }

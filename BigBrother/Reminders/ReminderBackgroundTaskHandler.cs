@@ -1,6 +1,4 @@
-using BigBrother.Reminders.Models;
 using BigBrother.Reminders.Services;
-using Discord;
 using Discord.WebSocket;
 using Eris.Handlers.BackgroundTasks;
 
