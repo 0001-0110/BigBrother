@@ -1,10 +1,10 @@
 volumes:
-  postgres-data:
+  bigbrother-postgres-data:
   ollama-data:
 
 services:
 
-  big-brother:
+  bigbrother:
     build:
       context: ./
       dockerfile: Dockerfile
@@ -17,13 +17,20 @@ services:
       - ollama
 
   bigbrother-postgres:
-    extends:
-      file: postgres/docker-compose.yml
-      service: bigbrother-postgres
+    image: postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - postgres-data:/var/lib/postgresql/
+    expose:
+      - 5432
 
   ollama:
     image: ollama/ollama
-    expose:
-      - "11434"
     volumes:
       - ollama-data:/root/.ollama
+    expose:
+      - 11434
