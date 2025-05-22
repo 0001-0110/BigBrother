@@ -67,7 +67,7 @@ internal class ReminderCommandHandler : CommandHandler
         await RespondAsync($"Reminders:\n{response}");
     }
 
-    [SlashCommand("remove", "remove one of your reminder")]
+    // [SlashCommand("remove", "remove one of your reminder")]
     public async Task Remove(string id)
     {
         await RespondAsync("How many times do I have to tell you ? This is not yet implemented");
