@@ -8,6 +8,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables">
       <Version>9.0.5</Version>
     </PackageReference>
+    <PackageReference Include="Npgsql" Version="9.0.3" />
   </ItemGroup>
 
   <PropertyGroup>

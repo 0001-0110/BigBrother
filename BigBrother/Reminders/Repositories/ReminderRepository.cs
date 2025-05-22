@@ -1,33 +1,114 @@
 using BigBrother.Reminders.Models;
+using Npgsql;
 
 namespace BigBrother.Reminders.Repositories;
 
-public class ReminderRepository
+public class ReminderRepository : SqlRepository
 {
     public ICollection<Reminder> _reminders;
 
-    public ReminderRepository()
+    // TODO Replace by value from configuration
+    public ReminderRepository() : base("Host=bigbrother-postgres;Port=5432;Username=postgres;Password=password;Database=postgres")
     {
         _reminders = [];
     }
 
-    public void Create(Reminder reminder)
+    private async Task<Reminder?> MapReminder(NpgsqlDataReader reader)
     {
-        _reminders.Add(reminder);
+        if (!await reader.ReadAsync())
+            return null;
+
+        return new Reminder(
+            id: reader.GetGuid(0),
+            userId: Convert.ToUInt64(reader.GetValue(1)),
+            channelId: Convert.ToUInt64(reader.GetValue(2)),
+            dueDate: reader.GetDateTime(3),
+            message: reader.GetString(4)
+        );
     }
 
-    public IEnumerable<Reminder> GetByUserId(ulong userId)
+    private async Task<IEnumerable<Reminder>> MapReminders(NpgsqlDataReader reader)
     {
-        return _reminders.Where(reminder => reminder.UserId == userId);
+        List<Reminder> reminders = [];
+        while (await reader.ReadAsync())
+        {
+            reminders.Add(new Reminder(
+                id: reader.GetGuid(0),
+                userId: Convert.ToUInt64(reader.GetValue(1)),
+                channelId: Convert.ToUInt64(reader.GetValue(2)),
+                dueDate: reader.GetDateTime(3),
+                message: reader.GetString(4)
+            ));
+        }
+        return reminders;
     }
 
-    public Reminder? GetNextDueReminder()
+    public Task<Reminder> Create(Reminder reminder)
     {
-        return _reminders.MinBy(reminder => reminder.DueDate);
+        NpgsqlCommand createCommand(NpgsqlConnection connection)
+        {
+            // TODO Change to stored procedures
+            NpgsqlCommand command = new NpgsqlCommand(
+                @"INSERT INTO reminders (user_id, channel_id, due_date, message)
+                VALUES (@userId, @channelId, @dueDate, @message)
+                RETURNING id, user_id, channel_id, due_date, message",
+                connection);
+
+            command.Parameters.AddWithValue("userId", NpgsqlTypes.NpgsqlDbType.Numeric, Convert.ToDecimal(reminder.UserId));
+            command.Parameters.AddWithValue("channelId", NpgsqlTypes.NpgsqlDbType.Numeric, Convert.ToDecimal(reminder.ChannelId));
+            command.Parameters.AddWithValue("dueDate", reminder.DueDate);
+            command.Parameters.AddWithValue("message", reminder.Message);
+
+            return command;
+        }
+
+        return Execute(createCommand, MapReminder);
     }
 
-    public void Delete(Reminder reminder)
+    public Task<IEnumerable<Reminder>> GetByUserId(ulong userId)
     {
-        _reminders.Remove(reminder);
+        NpgsqlCommand createCommand(NpgsqlConnection connection)
+        {
+            // TODO Change to stored procedures
+            NpgsqlCommand command = new NpgsqlCommand(
+                @"SELECT id, user_id, channel_id, due_date, message
+                FROM reminders
+                WHERE user_id = @userId LIMIT 1",
+                connection);
+
+            command.Parameters.AddWithValue("userId", NpgsqlTypes.NpgsqlDbType.Numeric, Convert.ToDecimal(userId));
+
+            return command;
+        }
+
+        return Execute(createCommand, MapReminders);
+    }
+
+    public Task<Reminder?> GetNextDueReminder()
+    {
+        NpgsqlCommand createCommand(NpgsqlConnection connection)
+        {
+            // TODO Change to stored procedures
+            return new NpgsqlCommand(
+                @"SELECT id, user_id, channel_id, due_date, message
+                FROM reminders
+                ORDER BY due_date
+                LIMIT 1",
+                connection);
+        }
+
+        return Execute(createCommand, MapReminder);
+    }
+
+    public async Task<bool> Delete(Guid id)
+    {
+        NpgsqlCommand createCommand(NpgsqlConnection connection)
+        {
+            NpgsqlCommand command = new NpgsqlCommand(@"DELETE FROM reminders WHERE id = @id", connection);
+            command.Parameters.AddWithValue("id", id);
+            return command;
+        }
+
+        return await ExecuteNonQuery(createCommand) != 0;
     }
 }

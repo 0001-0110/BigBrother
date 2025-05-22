@@ -63,7 +63,7 @@ internal class ReminderCommandHandler : CommandHandler
     [SlashCommand("list", "see all of your reminders")]
     public async Task List()
     {
-        string response = string.Join(Environment.NewLine, _reminderService.GetReminders(Context.User.Id).Select(reminder => reminder.ToString()));
+        string response = string.Join(Environment.NewLine, (await _reminderService.GetReminders(Context.User.Id)).Select(reminder => reminder.ToString()));
         await RespondAsync($"Reminders:\n{response}");
     }
 

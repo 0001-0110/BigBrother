@@ -17,7 +17,7 @@ public class ReminderService
         _client = client;
         _reminderRepository = reminderRepository;
         _cancellationTokenSource = new CancellationTokenSource();
-        _reminderTask = Task.CompletedTask;
+        _reminderTask = WaitForNextReminder(_cancellationTokenSource.Token);
     }
 
     public async Task<string> AddReminder(Reminder reminder)
@@ -28,7 +28,6 @@ public class ReminderService
             string[] errors = [
                 "Setting reminders in the past — ambitious, if misguided.",
                 "Ah, nostalgia. Try a future time instead.",
-                "I admire your commitment to irrelevance.",
                 "Past reminders? The future called, it's confused.",
                 "Time travel isn't supported. Yet.",
                 "That moment already happened. Try again.",
@@ -37,22 +36,17 @@ public class ReminderService
                 "Remind me never to ask you for the time.",
                 "If only you could change the past. Spoiler: You can't.",
                 "Past reminders? Bold strategy.",
-                "You really like reruns, huh?",
-                "Future's where the magic happens. Try there.",
-                "I'll remember that you're hopeless with time.",
-                "Error 404: Future timestamp not found.",
-                "Your calendar is as reliable as your jokes.",
                 "That's not how time works, friend.",
                 "Try to think forward, it's a wild concept.",
                 "Past reminders: impressively pointless.",
-                "Set it for later — you might surprise yourself.",
             ];
 
             return errors[new Random().Next(errors.Length)];
         }
 
-        _reminderRepository.Create(reminder);
+        await _reminderRepository.Create(reminder);
 
+        // TODO Whould it be better to only cancel when needed ? (when the added reminder is sonner than the next reminder)
         _cancellationTokenSource.Cancel();
         await _reminderTask;
         _cancellationTokenSource = new CancellationTokenSource();
@@ -61,7 +55,7 @@ public class ReminderService
         return $"Added reminder for {TimestampTag.FromDateTime(reminder.DueDate)}";
     }
 
-    public IEnumerable<Reminder> GetReminders(ulong userId)
+    public Task<IEnumerable<Reminder>> GetReminders(ulong userId)
     {
         return _reminderRepository.GetByUserId(userId);
     }
@@ -73,7 +67,7 @@ public class ReminderService
 
     private async Task WaitForNextReminder(CancellationToken cancellationToken)
     {
-        Reminder? reminder = _reminderRepository.GetNextDueReminder();
+        Reminder? reminder = await _reminderRepository.GetNextDueReminder();
         if (reminder is null)
             return;
 
@@ -93,7 +87,7 @@ public class ReminderService
         // TODO Rewrite this mess
         await (await _client.GetChannelAsync(reminder.ChannelId) as IMessageChannel)!.SendMessageAsync(reminder.ToString());
 
-        _reminderRepository.Delete(reminder);
+        await _reminderRepository.Delete(reminder.Id);
         _reminderTask = WaitForNextReminder(cancellationToken);
     }
 }
