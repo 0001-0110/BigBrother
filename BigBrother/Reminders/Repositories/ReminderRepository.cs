@@ -73,7 +73,7 @@ public class ReminderRepository : SqlRepository
             NpgsqlCommand command = new NpgsqlCommand(
                 @"SELECT id, user_id, channel_id, due_date, message
                 FROM reminders
-                WHERE user_id = @userId LIMIT 1",
+                WHERE user_id = @userId",
                 connection);
 
             command.Parameters.AddWithValue("userId", NpgsqlTypes.NpgsqlDbType.Numeric, Convert.ToDecimal(userId));
