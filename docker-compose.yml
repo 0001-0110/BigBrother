@@ -1,4 +1,5 @@
 volumes:
+  postgres-data:
   ollama-data:
 
 services:
@@ -11,6 +12,14 @@ services:
       TZ: "Europe/Paris"
     env_file:
       - ./.env
+    depends_on:
+      - bigbrother-postgres
+      - ollama
+
+  bigbrother-postgres:
+    extends:
+      file: postgres/docker-compose.yml
+      service: bigbrother-postgres
 
   ollama:
     image: ollama/ollama
