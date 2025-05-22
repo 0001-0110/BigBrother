@@ -26,16 +26,18 @@ public class ConversationMessageHandler : IMessageHandler
             return false;
 
         using IDisposable typing = message.Channel.EnterTypingState();
-        string? response = await _ollamaClient.Generate(new OllamaRequest([
-            new Message(Message.Role.User, message.Content),
-        ]));
+        string? response = await _ollamaClient.Generate(new OllamaRequest(
+            (await message.Channel.GetMessagesAsync().FlattenAsync()).Select(previousMessage =>
+            new Message(previousMessage.Author.Id == _client.CurrentUser.Id ? Message.Role.Assistant : Message.Role.User,
+                $"User {(message.Author as IGuildUser)!.DisplayName}: {message}"))
+        ));
         if (response is null)
         {
             await _logger.Log(LogSeverity.Warning, nameof(ConversationMessageHandler), "No response from LLM");
             return true;
         }
 
-        await message.Channel.SendMessageAsync(response);
+        await message.Channel.SendMessageAsync(response.Take(2000).ToString());
         return true;
     }
 }
