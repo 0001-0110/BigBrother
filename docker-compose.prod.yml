@@ -1,0 +1,25 @@
+volumes:
+  bigbrother-postgres-data:
+  ollama-data:
+
+services:
+
+  bigbrother:
+    extends:
+      file: docker-compose.yml
+      service: bigbrother
+    env_file:
+      - ./.prod.env
+    depends_on:
+      - bigbrother-postgres
+      - ollama
+
+  bigbrother-postgres:
+    extends:
+      file: docker-compose.yml
+      service: bigbrother-postgres
+
+  ollama:
+    extends:
+      file: docker-compose.yml
+      service: ollama

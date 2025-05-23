@@ -24,25 +24,10 @@ public class ReminderService
     {
         // TODO This is cumbersome, move or remove
         if (reminder.DueDate < DateTime.Now)
-        {
-            string[] errors = [
-                "Setting reminders in the past — ambitious, if misguided.",
-                "Ah, nostalgia. Try a future time instead.",
-                "Past reminders? The future called, it's confused.",
-                "Time travel isn't supported. Yet.",
-                "That moment already happened. Try again.",
-                "Living in the past, are we?",
-                "Your sense of timing is... unique.",
-                "Remind me never to ask you for the time.",
-                "If only you could change the past. Spoiler: You can't.",
-                "Past reminders? Bold strategy.",
-                "That's not how time works, friend.",
-                "Try to think forward, it's a wild concept.",
-                "Past reminders: impressively pointless.",
-            ];
+            return "Past reminders? Bold strategy.";
 
-            return errors[new Random().Next(errors.Length)];
-        }
+        if (reminder.DueDate - DateTime.Now > TimeSpan.FromDays(365))
+            return "This is a really long time";
 
         await _reminderRepository.Create(reminder);
 
