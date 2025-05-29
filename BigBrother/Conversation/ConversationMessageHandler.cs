@@ -50,14 +50,23 @@ public class ConversationMessageHandler : IMessageHandler
         if (!message.MentionedUsers.Select(user => user.Id).Contains(_client.CurrentUser.Id))
             return false;
 
-        using IDisposable typing = message.Channel.EnterTypingState();
-        string? response = await _ollamaClient.Generate(new OllamaRequest(
-            (await message.Channel.GetMessagesAsync().FlattenAsync()).Select(previousMessage =>
-            new Message(previousMessage.Author.Id == _client.CurrentUser.Id ? Role.Assistant : Role.User,
-                $"User {(message.Author as IGuildUser)!.DisplayName}: {GetPreProcessedContent(message)}"))
-                // Add the prompt to give the bot its personnality
-                .Prepend(new Message(Role.System, _prompt))
-        ));
+        string? response = null;
+        try
+        {
+            using IDisposable typing = message.Channel.EnterTypingState();
+            response = await _ollamaClient.Generate(new OllamaRequest(
+                (await message.Channel.GetMessagesAsync().FlattenAsync()).Select(previousMessage =>
+                new Message(previousMessage.Author.Id == _client.CurrentUser.Id ? Role.Assistant : Role.User,
+                    $"User {(message.Author as IGuildUser)!.DisplayName}: {GetPreProcessedContent(message)}"))
+                    // Add the prompt to give the bot its personnality
+                    .Prepend(new Message(Role.System, _prompt))
+            ));
+        }
+        catch (Exception)
+        {
+            response = null;
+        }
+
         if (response is null)
             await _logger.Log(LogSeverity.Warning, nameof(ConversationMessageHandler), "No response from LLM");
 

@@ -1,4 +1,6 @@
 using System.Text;
+using Discord;
+using Eris.Logging;
 using Newtonsoft.Json;
 
 namespace BigBrother.Conversation;
@@ -63,6 +65,13 @@ public class OllamaClient
         public ApiMessage Message;
     }
 
+    private readonly ILogger _logger;
+
+    public OllamaClient(ILogger logger)
+    {
+        _logger = logger;
+    }
+
     private async Task Pull(string model)
     {
         string url = "http://ollama:11434/api/pull";
@@ -76,13 +85,11 @@ public class OllamaClient
             HttpResponseMessage response = await httpClient.PostAsync(url, content);
             string result = await response.Content.ReadAsStringAsync();
 
-            Console.WriteLine("Response:");
-            Console.WriteLine(result);
+            await _logger.Log(LogSeverity.Verbose, nameof(OllamaClient), $"Response: {result}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error:");
-            Console.WriteLine(ex.Message);
+            await _logger.Log(LogSeverity.Verbose, nameof(OllamaClient), $"Error", ex);
         }
     }
 
@@ -91,23 +98,21 @@ public class OllamaClient
         string body = request.ToJson();
         StringContent content = new StringContent(body, Encoding.UTF8, "application/json");
 
-        using (HttpClient httpClient = new HttpClient())
+        using HttpClient httpClient = new HttpClient();
+        httpClient.Timeout = TimeSpan.FromMinutes(2);
+        // Send the request
+        HttpResponseMessage response = await httpClient.PostAsync(_url, content);
+
+        if (!response.IsSuccessStatusCode)
         {
-            // Send the request
-            HttpResponseMessage response = await httpClient.PostAsync(_url, content);
+            await _logger.Log(LogSeverity.Error, nameof(OllamaClient), $"LLM request failed: {response}");
+            if (!retry)
+                return null;
 
-            if (!response.IsSuccessStatusCode)
-            {
-                Console.WriteLine("LLM request failed");
-                Console.WriteLine(response.ToString());
-                if (!retry)
-                    return null;
-
-                await Pull(request.Model);
-                return await Generate(request, false);
-            }
-
-            return JsonConvert.DeserializeObject<LlamaResponse>(await response.Content.ReadAsStringAsync())?.Message.Content;
+            await Pull(request.Model);
+            return await Generate(request, false);
         }
+
+        return JsonConvert.DeserializeObject<LlamaResponse>(await response.Content.ReadAsStringAsync())?.Message.Content;
     }
 }
