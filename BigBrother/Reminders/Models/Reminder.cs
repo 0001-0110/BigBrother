@@ -1,3 +1,5 @@
+using Discord;
+
 namespace BigBrother.Reminders.Models;
 
 public class Reminder
@@ -27,6 +29,6 @@ public class Reminder
 
     public override string ToString()
     {
-        return $"{DueDate}: {Message}";
+        return $"{MentionUtils.MentionUser(UserId)}: {Message}";
     }
 }
