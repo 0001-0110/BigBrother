@@ -11,6 +11,9 @@ down:
 prod:
 	set -a && . .prod.env && set +a && docker compose $(BIGBROTHER_COMPOSE_ARGS) up --build -d
 
+pull:
+	docker compose $(BIGBROTHER_COMPOSE_ARGS) pull
+
 build:
 	docker compose $(BIGBROTHER_COMPOSE_ARGS) build
 
