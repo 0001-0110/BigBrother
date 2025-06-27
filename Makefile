@@ -1,21 +1,12 @@
-.PHONY: up down config debug clean
+.PHONY: up down prod
 
 include docker-compose.mk
 
-up:
-	docker compose $(BIGBROTHER_COMPOSE_ARGS) up --build -d
+up: down
+	docker compose up --build -d
 
 down:
-	docker compose $(BIGBROTHER_COMPOSE_ARGS) down
+	docker compose down
 
-prod:
-	set -a && . .prod.env && set +a && docker compose $(BIGBROTHER_COMPOSE_ARGS) up --build -d
-
-pull:
-	docker compose $(BIGBROTHER_COMPOSE_ARGS) pull
-
-build:
-	docker compose $(BIGBROTHER_COMPOSE_ARGS) build
-
-config:
-	docker compose $(BIGBROTHER_COMPOSE_ARGS) config
+prod: down
+	docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
