@@ -1,7 +1,5 @@
 .PHONY: up down prod
 
-include docker-compose.mk
-
 up: down
 	docker compose up --build -d
 
